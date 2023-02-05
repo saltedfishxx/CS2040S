@@ -1,0 +1,29 @@
+Initialise program
+    s: INTEGER, <-- input
+    n: INTEGER, <-- input
+    outputString: STRING
+
+    players: ArrayList<Pair<Integer, Integer>> // {state (0, 1, 2),  player #}
+    players: n
+
+    FOR i <-- 0 to players.size() DO             
+        players.get(i).tail = i;
+
+    index: INTEGER
+    index: 0
+
+    WHILE (players.size()) > 1 DO
+        index = (index + s - 1) % players.size()
+        IF players.get(index).head == 0                         //if folded hands
+            players.get(index).head = 1                         //change state of chosen player
+            players.insert(index, {1, players.get(index).tail}) //copy another fist into ArrayList
+
+        ELSE IF players.get(index).head == 1                    //if fist
+            players.get(index).head = 2;
+			index++;
+   
+        ELSE
+            players.remove(index)                               //remove player
+    
+
+    outputString: players.get(0).tail                           //get last standing player

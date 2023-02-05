@@ -1,0 +1,35 @@
+Initialise program
+	n: INTEGER
+    n: <-- input
+    k: INTEGER
+    k: <-- input
+    outputString: STRING
+    outputString: "Anywhere is fine I guess"
+
+    FOR i <-- 0 to n DO               //loop through number of restaurants
+        resName: STRING
+        resName: <-- input
+        peaSoup: BOOLEAN
+        peaSoup: false
+        panCakes: BOOLEAN
+        panCakes: false
+
+        FOR j <-- 0 to k DO         //loop through number of items
+            itemName: STRING
+            itemName: <-- input
+            IF itemName == "pancakes" DO
+                panCakes: true
+            ELSE IF itemName == "pea soup" DO
+                peaSoup: true
+            END IF
+        NEXT j
+        
+        IF pancakes == true AND peaSoup == true DO
+            outputString: resName
+            BREAK
+        END IF
+
+    NEXT i
+
+    OUTPUT: outputString
+

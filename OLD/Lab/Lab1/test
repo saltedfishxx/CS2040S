@@ -1,0 +1,18 @@
+Initialise program
+    caseCount: <-- input, INTEGER
+    dict: HashMap (each key is the alphabet, value is the number assigned)
+
+    FOR i <-- 0 to caseCount DO               //loop through number of cases
+        message: <-- input, STRING
+        sb: new StringBuilder()
+        prevLetter: "", STRING
+
+        FOR j <-- 0 to message.LENGTH DO         //loop through each char in message
+            letter = get value from message char key
+            IF prevLetter == letter
+                sb.append(" ")
+            sb.append(letter)
+            prevLetter: letter
+        
+        finalMessage: sb.toString(), STRING
+        OUTPUT: finalMessage
