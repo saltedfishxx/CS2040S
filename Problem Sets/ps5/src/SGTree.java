@@ -1,3 +1,5 @@
+import com.sun.source.tree.Tree;
+
 /**
  * ScapeGoat Tree class
  * <p>
@@ -23,17 +25,20 @@ public class SGTree {
         int key;
         public TreeNode left = null;
         public TreeNode right = null;
+        int weight;
 
         TreeNode(int k) {
-            key = k;
+            this.key = k;
+            this.weight = 1;
         }
     }
 
     // Root of the binary tree
     public TreeNode root = null;
 
+
     /**
-     * Counts the number of nodes in the specified subtree.
+     * Counts the number of nodes in the specified subtree
      *
      * @param node  the parent node, not to be counted
      * @param child the specified subtree
@@ -41,30 +46,94 @@ public class SGTree {
      */
     public int countNodes(TreeNode node, Child child) {
         // TODO: Implement this
-        return 0;
+        //return helper method depending on which child subtree
+        if (child == Child.LEFT) return count(node.left);
+        else return count(node.right);
+
     }
 
     /**
-     * Builds an array of nodes in the specified subtree.
+     * Recursive method to count number of nodes in tree
+     *
+     * @param node the current node
+     * @return number of nodes
+     */
+    public int count(TreeNode node) {
+        if (node == null)
+            return 0;
+        int l = count(node.left);
+        int r = count(node.right);
+        return 1 + l + r;
+    }
+
+    int count = 0;
+    /**
+     * Builds an array of nodes in the specified subtree
      *
      * @param node  the parent node, not to be included in returned array
      * @param child the specified subtree
      * @return array of nodes
      */
-    TreeNode[] enumerateNodes(TreeNode node, Child child) {
+    public TreeNode[] enumerateNodes(TreeNode node, Child child) {
         // TODO: Implement this
-        return new TreeNode[0];
+        TreeNode[] arr = new TreeNode[countNodes(node, child)];
+        count = 0;
+        //return helper method depending on which child is the subtree
+        if (child == Child.LEFT)
+            inOrder(node.left, arr);
+        else
+            inOrder(node.right, arr);
+        return arr;
     }
 
     /**
-     * Builds a tree from the list of nodes Returns the node that is the new root of the subtree
+     * Recursive method to traverse in order and record nodes into an array
+     *
+     * @param node  the node, not to be included in returned array
+     * @param arr   the array of nodes to return
+     * @return array of nodes
+     */
+
+    public void inOrder(TreeNode node, TreeNode[] arr) {
+        if (node != null) {
+            //in order: traverse left, record node, traverse right
+            inOrder(node.left, arr);
+            arr[count++] = node;
+            inOrder(node.right, arr);
+        }
+    }
+
+    /**
+     * Builds a tree from the list of nodes
+     * Returns the node that is the new root of the subtree
      *
      * @param nodeList ordered array of nodes
      * @return the new root node
      */
-    TreeNode buildTree(TreeNode[] nodeList) {
+    public TreeNode buildTree(TreeNode[] nodeList) {
         // TODO: Implement this
-        return new TreeNode(0);
+        return addNode(nodeList, 0, nodeList.length - 1);
+    }
+
+    /**
+     * Helper recursion method to build subtree
+     * Returns the node that is the new root of the subtree
+     *
+     * @param list  ordered array of nodes
+     * @param start starting index
+     * @param end   ending index
+     * @return the new root node
+     */
+    public TreeNode addNode(TreeNode[] list, int start, int end) {
+        //take middle value as root
+        //add values less than element to left of tree, and right for more than element, recurse
+        if (start > end)
+            return null;
+        int mid = start + (end - start) / 2;
+        TreeNode root = list[mid];
+        root.left = addNode(list, start, mid - 1);
+        root.right = addNode(list, mid + 1, end);
+        return root;
     }
 
     /**
@@ -74,10 +143,15 @@ public class SGTree {
      * @param node a node to check balance on
      * @return true if the node is balanced, false otherwise
      */
-    public boolean checkBalance(TreeNode node) {
-        // TODO: Implement this
-        return true;
+    public static boolean checkBalance(TreeNode node) {
+        if (node == null) {
+            return true;
+        }
+        int maxWeight = (node.weight * 2) / 3;
+        return (node.left == null || node.left.weight <= maxWeight) &&
+                (node.right == null || node.right.weight <= maxWeight);
     }
+
 
     /**
      * Rebuilds the specified subtree of a node.
@@ -95,8 +169,10 @@ public class SGTree {
         // Finally, replace the specified child with the new subtree
         if (child == Child.LEFT) {
             node.left = newChild;
+            fixWeights(node, Child.LEFT);
         } else if (child == Child.RIGHT) {
             node.right = newChild;
+            fixWeights(node, Child.RIGHT);
         }
     }
 
@@ -116,9 +192,15 @@ public class SGTree {
         while (true) {
             if (key <= node.key) {
                 if (node.left == null) break;
+                node.weight += 1;
+                if (!checkBalance(node))
+                    rebuild(node, Child.LEFT);
                 node = node.left;
             } else {
                 if (node.right == null) break;
+                node.weight += 1;
+                if (!checkBalance(node))
+                    rebuild(node, Child.RIGHT);
                 node = node.right;
             }
         }
@@ -127,6 +209,33 @@ public class SGTree {
             node.left = new TreeNode(key);
         } else {
             node.right = new TreeNode(key);
+        }
+    }
+
+    /**
+     * Updates the weights in a tree
+     *
+     * @param n node
+     * @param child the left/right child of the node
+     */
+    public void fixWeights(TreeNode n, Child child) {
+        if (child == Child.LEFT) {
+            fixWeightsHelper(n.left);
+        } else {
+            fixWeightsHelper(n.right);
+        }
+    }
+
+    /**
+     * Recursive implementation to update the weights in a tree
+     *
+     * @param n node
+     */
+    public void fixWeightsHelper(TreeNode n) {
+        if (n != null) {
+            n.weight = 1 + countNodes(n, Child.LEFT) + countNodes(n, Child.RIGHT);
+            fixWeightsHelper(n.left);
+            fixWeightsHelper(n.right);
         }
     }
 
